@@ -1,0 +1,14 @@
+C:\CTF\Projects\JsonToDynamic\bin\Debug\JsonToDynamic.exe.config
+C:\CTF\Projects\JsonToDynamic\bin\Debug\JsonToDynamic.exe
+C:\CTF\Projects\JsonToDynamic\bin\Debug\JsonToDynamic.pdb
+C:\CTF\Projects\JsonToDynamic\obj\Debug\JsonToDynamic.csprojAssemblyReference.cache
+C:\CTF\Projects\JsonToDynamic\obj\Debug\JsonToDynamic.csproj.CoreCompileInputs.cache
+C:\CTF\Projects\JsonToDynamic\obj\Debug\JsonToDynamic.exe
+C:\CTF\Projects\JsonToDynamic\obj\Debug\JsonToDynamic.pdb
+C:\CTF\Projects\git\JsonToDynamic\bin\Debug\JsonToDynamic.exe.config
+C:\CTF\Projects\git\JsonToDynamic\bin\Debug\JsonToDynamic.exe
+C:\CTF\Projects\git\JsonToDynamic\bin\Debug\JsonToDynamic.pdb
+C:\CTF\Projects\git\JsonToDynamic\obj\Debug\JsonToDynamic.csprojAssemblyReference.cache
+C:\CTF\Projects\git\JsonToDynamic\obj\Debug\JsonToDynamic.csproj.CoreCompileInputs.cache
+C:\CTF\Projects\git\JsonToDynamic\obj\Debug\JsonToDynamic.exe
+C:\CTF\Projects\git\JsonToDynamic\obj\Debug\JsonToDynamic.pdb
