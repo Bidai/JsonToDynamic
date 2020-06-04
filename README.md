@@ -2,7 +2,7 @@
 Json格式字符串与C#对象相互转换
 
 ## 示例代码：
-'''
+```C#
 namespace JsonToDynamic{
     class Program
     {
@@ -23,14 +23,14 @@ namespace JsonToDynamic{
         }
     }
 }
-'''
+```
 
 ### 输出结果
 
-'''
+```
 Json格式转换测试
 
 v ["value"] = 314
 v ["array"] [1] = True
 v = {"value":314,"array":["123",true]}
-'''
+```
