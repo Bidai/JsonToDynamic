@@ -14,8 +14,8 @@ namespace JsonToDynamic
         /// <param name="str">Json格式的字符串</param> 
         /// <returns>返回一个Dictionary<string,dynamic>或者dynamic[]对象</returns>
         static public dynamic FromJson(this string str)
-        { 
-            return FromJson(str, 0, str.Length); 
+        {
+            return FromJson(str, 0, str.Length);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace JsonToDynamic
                 length--;
             }
             //如果全是空白字符，则返回null
-            if (length == 0) 
+            if (length == 0)
                 return null;
             //对于最外层为 [ ] 的Json格式字符串，将返回数组
             if (str[startIndex] == '[')
@@ -155,7 +155,7 @@ namespace JsonToDynamic
                     //遇到双引号
                     else if (ch == '\"')
                     {
-                        if (strtmp == null) 
+                        if (strtmp == null)
                             strtmp = str.Substring(lastIndex, i - lastIndex);
                         //状态切换为双引号外部
                         inq = false;
@@ -178,7 +178,9 @@ namespace JsonToDynamic
                     //遇到 : 则确定前面的内容为key
                     else if (ch == ':')
                     {
-                        key = strtmp;
+                        if (strtmp is null)
+                            key = str.Substring(lastIndex, i - lastIndex);
+                        else key = strtmp;
                         strtmp = null;
                         isstr = false;
                         lastIndex = i + 1;
@@ -213,6 +215,7 @@ namespace JsonToDynamic
                             if (isstr)
                             {
                                 result.Add(key, strtmp);
+                                strtmp = null;
                                 isstr = false;
                             }
                             else
@@ -222,6 +225,7 @@ namespace JsonToDynamic
                                 result.Add(key, DynamicParse(t));
                             }
                         }
+                        if(ch==',')lastIndex = i + 1;
                         //遇到 } 时完成解析
                         if (ch == '}')
                         {
@@ -350,7 +354,8 @@ namespace JsonToDynamic
             StringBuilder result = null;
             foreach (var a in dic)
             {
-                if (result == null) {
+                if (result == null)
+                {
                     result = new StringBuilder("{");
                 }
                 else
@@ -430,9 +435,11 @@ namespace JsonToDynamic
             int lastidx = 0;
             //转义字符串
             string addString = null;
-            for (int i =0;i< str.Length;++i) {
+            for (int i = 0; i < str.Length; ++i)
+            {
                 //根据字符设置转义字符串，这里仅处理四种转义
-                switch (str[i]) {
+                switch (str[i])
+                {
                     case '\\':
                         addString = "\\\\";
                         break;
@@ -447,7 +454,8 @@ namespace JsonToDynamic
                         break;
                 }
                 //当addString非空时，说明有转义内容需要添加
-                if (addString != null) {
+                if (addString != null)
+                {
                     if (lastidx < i)
                     {
                         result.Append(str, lastidx, i - lastidx);
@@ -468,7 +476,8 @@ namespace JsonToDynamic
         /// </summary>
         /// <param name="str">Json字符串中表示非字符串的值的部分</param>
         /// <returns>返回null、bool类型或者double类型对象</returns>
-        static dynamic DynamicParse(string str) {
+        static dynamic DynamicParse(string str)
+        {
             string s = str.Trim().ToLower();
             if (s == "null")
                 return null;
