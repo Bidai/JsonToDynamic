@@ -449,7 +449,7 @@ namespace JsonToDynamic
                         addString = "\\n";
                         break;
                     default:
-                        if (str[i] < 0x1f)
+                        if (str[i] <= 0x1f)
                         {
                             addString = "\\u00" + ((int)str[i]).ToString("x2");
                         }
