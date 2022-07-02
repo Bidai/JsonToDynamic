@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -178,9 +178,7 @@ namespace JsonToDynamic
                     //遇到 : 则确定前面的内容为key
                     else if (ch == ':')
                     {
-                        if (strtmp is null)
-                            key = str.Substring(lastIndex, i - lastIndex);
-                        else key = strtmp;
+                        key = strtmp;
                         strtmp = null;
                         isstr = false;
                         lastIndex = i + 1;
@@ -215,7 +213,6 @@ namespace JsonToDynamic
                             if (isstr)
                             {
                                 result.Add(key, strtmp);
-                                strtmp = null;
                                 isstr = false;
                             }
                             else
@@ -225,7 +222,6 @@ namespace JsonToDynamic
                                 result.Add(key, DynamicParse(t));
                             }
                         }
-                        if(ch==',')lastIndex = i + 1;
                         //遇到 } 时完成解析
                         if (ch == '}')
                         {
@@ -447,10 +443,16 @@ namespace JsonToDynamic
                         addString = "\\\"";
                         break;
                     case '\r':
-                        addString = "\\\r";
+                        addString = "\\r";
                         break;
                     case '\n':
-                        addString = "\\\n";
+                        addString = "\\n";
+                        break;
+                    default:
+                        if (str[i] < 0x1f)
+                        {
+                            addString = "\\u00" + ((int)str[i]).ToString("x2");
+                        }
                         break;
                 }
                 //当addString非空时，说明有转义内容需要添加
@@ -459,8 +461,8 @@ namespace JsonToDynamic
                     if (lastidx < i)
                     {
                         result.Append(str, lastidx, i - lastidx);
-                        lastidx = i + 1;
                     }
+                    lastidx = i + 1;
                     result.Append(addString);
                     addString = null;
                 }
