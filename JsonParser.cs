@@ -449,10 +449,11 @@ namespace JsonToDynamic
                         addString = "\\n";
                         break;
                     default:
-                        if (str[i] <= 0x1f)
+                        if (str[i] > 0x7f || str[i] <= 0)
                         {
-                            addString = "\\u00" + ((int)str[i]).ToString("x2");
+                            addString = "\\u" + ((int)str[i]).ToString("x4");
                         }
+                        else addString = str[i].ToString();
                         break;
                 }
                 //当addString非空时，说明有转义内容需要添加
