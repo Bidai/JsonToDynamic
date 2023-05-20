@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace JsonToDynamic
 {
@@ -14,9 +15,10 @@ namespace JsonToDynamic
 
             Console.WriteLine("v [\"value\"] = " + d);
             Console.WriteLine("v [\"array\"] [1] = " + t);
-
             Console.WriteLine("v = " + JsonParser.ToJson(v));
 
+            Console.WriteLine("ToJson(new Dictionary<int,int>{{1,2}}) -> " + JsonParser. ToJson(new Dictionary<int, int> { { 1, 2 } }));
+            Console.WriteLine("ToJson(FromJson(\"{1:2}\")) -> " + JsonParser.ToJson(JsonParser.FromJson("{1:2}")));
             Console.Read();
         }
     }

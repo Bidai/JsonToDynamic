@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -178,7 +180,10 @@ namespace JsonToDynamic
                     //遇到 : 则确定前面的内容为key
                     else if (ch == ':')
                     {
-                        key = strtmp;
+                        if(strtmp==null)
+                            key = str.Substring(lastIndex, i - lastIndex).Trim();
+                        else 
+                            key = strtmp;
                         strtmp = null;
                         isstr = false;
                         lastIndex = i + 1;
@@ -340,15 +345,15 @@ namespace JsonToDynamic
             return result.ToArray();
         }
         /// <summary>
-        /// Dictionary<string,dynamic>类型对象转换为Json格式字符串。仅针对从Json字符串生成的动态对象
+        /// Dictionary类型对象转换为Json格式字符串。仅针对从Json字符串生成的动态对象
         /// </summary>
-        /// <param name="dic">Dictionary<string,dynamic>类型的对象</param>
+        /// <param name="dic">Dictionary类型的对象</param>
         /// <returns>返回Json格式的字符串</returns>
-        static public string ToJson(this Dictionary<string, dynamic> dic)
+        static string DictionaryToJson( IDictionary dic)
         {
             if (dic == null) return null;
             StringBuilder result = null;
-            foreach (var a in dic)
+            foreach (dynamic a in dic)
             {
                 if (result == null)
                 {
@@ -356,67 +361,62 @@ namespace JsonToDynamic
                 }
                 else
                     result.Append(',');
-                result.Append('\"');
-                result.Append(JsonEscape(a.Key));
-                result.Append("\":");
-                if (a.Value == null) result.Append("null");
-                else
-                {
-                    var t = a.Value.GetType();
-                    if (t == typeof(string))
-                    {
-                        result.Append('\"');
-                        result.Append(JsonEscape(a.Value));
-                        result.Append("\"");
-                    }
-                    else if (t == typeof(Dictionary<string, dynamic>) || t == typeof(dynamic[]))
-                    {
-                        result.Append(ToJson(a.Value));
-                    }
-                    else
-                    {
-                        result.Append(a.Value.ToString().ToLower());
-                    }
-                }
+                result.Append(ToJson(a.Key));
+                result.Append(":");
+                result.Append(ToJson(a.Value));
             }
             if (result == null) return "{}";
             result.Append('}');
             return result.ToString();
         }
         /// <summary>
-        /// dynamic[]类型对象转换为Json格式字符串。仅针对从Json字符串生成的动态对象
+        /// C#对象转换为Json格式字符串。注意，非基础数据类型将序列化为ToString()所得字符串
         /// </summary>
-        /// <param name="dic">dynamic[]类型的对象</param>
+        /// <param name="d">对象</param>
         /// <returns>返回Json格式的字符串</returns>
-        static public string ToJson(this dynamic[] arr)
+        static public string ToJson(this object d) {
+            if (d == null) return "null";
+            var arr = d as Array;
+            if (arr != null) {
+                return ArrayToJson(arr);
+            }
+            var dic = d as IDictionary;
+            if (dic != null)
+            {
+                return DictionaryToJson(dic);
+            }
+            var lst = d as IList;
+            if (lst != null)
+            {
+                dynamic[] dy = new dynamic[lst.Count];
+                int i = 0;
+                foreach (var a in lst)
+                    dy[i++] = a;
+                return ArrayToJson(dy);
+            }
+            Type type= d.GetType();
+            if (type == typeof(string)) { 
+                return "\""+JsonEscape(d.ToString())+"\"";
+            }
+            if (type == typeof(bool))
+                return (bool)d == true ? "ture" : "false";
+            if (type == typeof(int) || type == typeof(double) || type == typeof(float) || type == typeof(long) || type == typeof(uint) || type == typeof(ulong) || type == typeof(short) || type == typeof(ushort) || type == typeof(byte) || type == typeof(sbyte) || type == typeof(decimal) || type == typeof(BigInteger)) {
+                return d.ToString();
+            }
+            return "\"" + JsonEscape(d.ToString()) + "\"";
+        }
+        static public string ArrayToJson( Array arr)
         {
             if (arr == null) return null;
+            if (arr.Length == 0) return "[]";
             StringBuilder result = new StringBuilder("[");
-            for (int i = 0; i < arr.Length; ++i)
+            int i = 0;
+            for (; i < arr.Length-1; ++i)
             {
-                var a = arr[i];
-                if (a == null)
-                    result.Append("null");
-                else
-                {
-                    var t = a.GetType();
-                    if (t == typeof(string))
-                    {
-                        result.Append('\"');
-                        result.Append(JsonEscape(a));
-                        result.Append("\"");
-                    }
-                    else if (t == typeof(Dictionary<string, dynamic>) || t == typeof(dynamic[]))
-                    {
-                        result.Append(ToJson(a));
-                    }
-                    else
-                    {
-                        result.Append(a.ToString().ToLower());
-                    }
-                }
-                if (i < arr.Length - 1) result.Append(',');
+                result.Append(ToJson(arr.GetValue(i)));
+                result.Append(',');
             }
+            result.Append(ToJson(arr.GetValue(i)));
             result.Append(']');
             return result.ToString();
         }
@@ -488,7 +488,25 @@ namespace JsonToDynamic
             if (s == "false")
                 return false;
             if (s.Length > 0)
-                return double.Parse(s);
+            {
+                if (s.Contains('.') || s.Contains('e')) {
+                    double dbl = 0;
+                    if (double.TryParse(s, out dbl)) return dbl;
+                }
+                else {
+                    if (s.Length <= 19) {
+                        int i = 0;
+                        if (int.TryParse(s, out i)) return i;
+                        long l = 0;
+                        if (long.TryParse(s, out l)) return l;
+                        ulong ul = 0;
+                        if (ulong.TryParse(s, out ul)) return ul;
+                    }
+                    BigInteger bi = new BigInteger();
+                    if (BigInteger.TryParse(s, out bi)) return bi;
+
+                }
+            }
             //throw new InvalidCastException("无法识别的字符串："+str);
             return str;//识别为原字符串
         }
