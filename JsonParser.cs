@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace JsonToDynamic
 {
@@ -83,7 +82,7 @@ namespace JsonToDynamic
                         case 'f':
                             tmp.Append('\f');
                             break;
-                        case 'x':
+                        case 'x'://非标准
                             tmp.Append((char)int.Parse(str.Substring(i + 1, 2), System.Globalization.NumberStyles.HexNumber));
                             i += 2;
                             break;
@@ -180,9 +179,9 @@ namespace JsonToDynamic
                     //遇到 : 则确定前面的内容为key
                     else if (ch == ':')
                     {
-                        if(strtmp==null)
+                        if (strtmp == null)
                             key = str.Substring(lastIndex, i - lastIndex).Trim();
-                        else 
+                        else
                             key = strtmp;
                         strtmp = null;
                         isstr = false;
@@ -329,7 +328,7 @@ namespace JsonToDynamic
                             {
                                 string t = str.Substring(lastIndex, i - lastIndex);
                                 //根据内容识别为null、bool类型、double类型对象
-                                result.Add(DynamicParse(t));
+                                if (!string.IsNullOrEmpty(t)) result.Add(DynamicParse(t));
                             }
                         }
                         if (ch == ']')
@@ -349,7 +348,7 @@ namespace JsonToDynamic
         /// </summary>
         /// <param name="dic">Dictionary类型的对象</param>
         /// <returns>返回Json格式的字符串</returns>
-        static string DictionaryToJson( IDictionary dic)
+        static string DictionaryToJson(IDictionary dic)
         {
             if (dic == null) return null;
             StringBuilder result = null;
@@ -374,10 +373,12 @@ namespace JsonToDynamic
         /// </summary>
         /// <param name="d">对象</param>
         /// <returns>返回Json格式的字符串</returns>
-        static public string ToJson(this object d) {
+        static public string ToJson(this object d)
+        {
             if (d == null) return "null";
             var arr = d as Array;
-            if (arr != null) {
+            if (arr != null)
+            {
                 return ArrayToJson(arr);
             }
             var dic = d as IDictionary;
@@ -394,24 +395,26 @@ namespace JsonToDynamic
                     dy[i++] = a;
                 return ArrayToJson(dy);
             }
-            Type type= d.GetType();
-            if (type == typeof(string)) { 
-                return "\""+JsonEscape(d.ToString())+"\"";
+            Type type = d.GetType();
+            if (type == typeof(string))
+            {
+                return "\"" + JsonEscape(d.ToString()) + "\"";
             }
             if (type == typeof(bool))
                 return (bool)d == true ? "ture" : "false";
-            if (type == typeof(int) || type == typeof(double) || type == typeof(float) || type == typeof(long) || type == typeof(uint) || type == typeof(ulong) || type == typeof(short) || type == typeof(ushort) || type == typeof(byte) || type == typeof(sbyte) || type == typeof(decimal) || type == typeof(BigInteger)) {
+            if (type == typeof(int) || type == typeof(double) || type == typeof(float) || type == typeof(long) || type == typeof(uint) || type == typeof(ulong) || type == typeof(short) || type == typeof(ushort) || type == typeof(byte) || type == typeof(sbyte) || type == typeof(decimal) || type == typeof(BigInteger))
+            {
                 return d.ToString();
             }
             return "\"" + JsonEscape(d.ToString()) + "\"";
         }
-        static public string ArrayToJson( Array arr)
+        static public string ArrayToJson(Array arr)
         {
             if (arr == null) return null;
             if (arr.Length == 0) return "[]";
             StringBuilder result = new StringBuilder("[");
             int i = 0;
-            for (; i < arr.Length-1; ++i)
+            for (; i < arr.Length - 1; ++i)
             {
                 result.Append(ToJson(arr.GetValue(i)));
                 result.Append(',');
@@ -448,8 +451,17 @@ namespace JsonToDynamic
                     case '\n':
                         addString = "\\n";
                         break;
+                    case '\t':
+                        addString = "\t";//不转义
+                        break;
+                    case '\f':
+                        addString = "\f";//不转义
+                        break;
+                    case '\b':
+                        addString = "\b";//不转义
+                        break;
                     default:
-                        if (str[i] > 0x7f || str[i] <= 0)
+                        if (str[i] > 0x7f || str[i] < 0x20)
                         {
                             addString = "\\u" + ((int)str[i]).ToString("x4");
                         }
@@ -490,12 +502,15 @@ namespace JsonToDynamic
                 return false;
             if (s.Length > 0)
             {
-                if (s.Contains('.') || s.Contains('e')) {
+                if (s.Contains('.') || s.Contains('e'))
+                {
                     double dbl = 0;
                     if (double.TryParse(s, out dbl)) return dbl;
                 }
-                else {
-                    if (s.Length <= 19) {
+                else
+                {
+                    if (s.Length <= 19)
+                    {
                         int i = 0;
                         if (int.TryParse(s, out i)) return i;
                         long l = 0;
