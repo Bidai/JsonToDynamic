@@ -401,7 +401,7 @@ namespace JsonToDynamic
                 return "\"" + JsonEscape(d.ToString()) + "\"";
             }
             if (type == typeof(bool))
-                return (bool)d == true ? "ture" : "false";
+                return (bool)d == true ? "true" : "false";
             if (type == typeof(int) || type == typeof(double) || type == typeof(float) || type == typeof(long) || type == typeof(uint) || type == typeof(ulong) || type == typeof(short) || type == typeof(ushort) || type == typeof(byte) || type == typeof(sbyte) || type == typeof(decimal) || type == typeof(BigInteger))
             {
                 return d.ToString();
