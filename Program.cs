@@ -8,8 +8,11 @@ namespace JsonToDynamic
         static void Main(string[] args)
         {
             Console.WriteLine("Json格式转换测试\n");
+            string teststr = JsonParser.FromJson("\"123\\\"456\"");
+            Console.WriteLine("teststr=" + teststr);
 
             dynamic v = JsonParser.FromJson("{\"value\":314,\"array\":[\"123\",true]}");
+            
             double d = v["value"];
             bool t = v["array"][1];
 

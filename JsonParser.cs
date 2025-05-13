@@ -45,7 +45,35 @@ namespace JsonToDynamic
                 return ArrayFromJson(str, startIndex, ref length);
             }
             //对于最外层为 { } 的Json格式字符串，将返回字典
-            return DictionaryFromJson(str, startIndex, ref length);
+            if (str[startIndex]=='{')return DictionaryFromJson(str, startIndex, ref length);
+            //字符串
+            if (str[startIndex] == '"') {
+                StringBuilder tmp = null;
+                int end = startIndex + length;
+                //记录字符串起始
+                int lastIndex = startIndex + 1;
+                int i;
+                for (i = lastIndex; i < end; ++i)
+                {
+                    //双引号内部
+                    char ch = str[i];
+                    //存在转义
+                    if (ch == '\\')
+                    {
+                        var strtmp = str.Substring(lastIndex, i - lastIndex);
+                        tmp = new StringBuilder();
+                        i = JsonStringConvert(ref tmp, str, i, end);
+                        return strtmp + tmp.ToString();
+                    }
+                    //遇到双引号
+                    else if (ch == '\"')
+                    {
+                        return str.Substring(lastIndex, i - lastIndex);
+                    }
+                }
+                return str.Substring(lastIndex, length - 1);
+            }
+            return DynamicParse(str.Substring(startIndex, length));
         }
         /// <summary>
         /// Json格式中的字符串值识别

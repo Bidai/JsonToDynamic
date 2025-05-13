@@ -16,7 +16,6 @@ C:\CTF\Projects\git\JsonToDynamic\obj\Debug\JsonToDynamic.pdb
 \\Qh\软件\gitblit\desktop\JsonToDynamic\bin\Debug\JsonToDynamic.exe
 \\Qh\软件\gitblit\desktop\JsonToDynamic\bin\Debug\JsonToDynamic.pdb
 \\Qh\软件\gitblit\desktop\JsonToDynamic\obj\Debug\JsonToDynamic.csproj.AssemblyReference.cache
-\\Qh\软件\gitblit\desktop\JsonToDynamic\obj\Debug\JsonToDynamic.csproj.SuggestedBindingRedirects.cache
 \\Qh\软件\gitblit\desktop\JsonToDynamic\obj\Debug\JsonToDynamic.csproj.CoreCompileInputs.cache
 \\Qh\软件\gitblit\desktop\JsonToDynamic\obj\Debug\JsonToDynamic.exe
 \\Qh\软件\gitblit\desktop\JsonToDynamic\obj\Debug\JsonToDynamic.pdb
